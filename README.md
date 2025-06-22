@@ -26,3 +26,19 @@ Aplicativo PWA desenvolvido com Next.js e Firebase para estúdios de unhas. Com 
 ```bash
 npm install
 npm run dev
+```
+
+Acesse: [http://localhost:3000](http://localhost:3000)
+
+## 📲 PWA
+
+Este app pode ser instalado como aplicativo nativo no Android/iOS ao acessar pelo navegador.
+
+## 🔐 Login
+
+O app redireciona para `/login`. Certifique-se de que o sistema de autenticação está implementado corretamente.
+
+## 📤 Deploy
+
+- Firebase Hosting
+- GitHub Pages (com adaptação para static export)
