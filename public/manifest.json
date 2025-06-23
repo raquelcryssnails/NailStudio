@@ -1,8 +1,8 @@
 {
   "name": "NailStudio AI",
-  "short_name": "NailStudio",
+  "short_name": "Cryss Nails",
   "description": "Acesso rápido ao portal do cliente do NailStudio AI.",
-  "start_url": "/client/login",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#E62E7B",
