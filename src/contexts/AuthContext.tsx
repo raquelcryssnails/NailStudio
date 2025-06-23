@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       await signOut(auth);
-      router.push('/login');
+      router.push('/');
     } catch (error) {
       console.error("Firebase logout error:", error);
     } finally {
@@ -100,5 +100,3 @@ export function useAuth() {
   }
   return context;
 }
-
-    

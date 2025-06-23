@@ -3,14 +3,14 @@
 
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Users, UserPlus, Search, Edit3, Trash2, Eye, Gift, Heart, Circle, PlusSquare, RotateCcw, Loader2, History, ShoppingBag, Star, MessageSquare, PackagePlus, Tag, Mail, Package as PackageIcon, Award, Save, PawPrint, Repeat, Calendar as CalendarIcon, CheckCircle2, XCircle } from "lucide-react";
+import { Users, UserPlus, Search, Edit3, Trash2, Eye, Gift, Heart, Circle, PlusSquare, RotateCcw, Loader2, History, ShoppingBag, Star, MessageSquare, PackagePlus, Tag, Mail, Package as PackageIcon, Award, Save, Paintbrush2, Repeat, Calendar as CalendarIcon, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"; 
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -780,12 +780,12 @@ export default function ClientesPage() {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <div className="px-6 border-b border-border">
                   <div className="w-full overflow-x-auto">
-                    <TabsList className="inline-flex w-max items-center justify-start gap-2 bg-transparent p-1">
-                        <Button variant={activeTab === 'dados' ? 'default' : 'ghost'} onClick={() => setActiveTab('dados')} className={cn("font-body text-xs sm:text-sm whitespace-nowrap", activeTab === 'dados' && 'bg-primary text-primary-foreground')}>Dados</Button>
-                        <Button variant={activeTab === 'fidelidade' ? 'default' : 'ghost'} onClick={() => setActiveTab('fidelidade')} className={cn("font-body text-xs sm:text-sm whitespace-nowrap", activeTab === 'fidelidade' && 'bg-primary text-primary-foreground')}>Fidelidade</Button>
-                        <Button variant={activeTab === 'pacotesCliente' ? 'default' : 'ghost'} onClick={() => setActiveTab('pacotesCliente')} className={cn("font-body text-xs sm:text-sm whitespace-nowrap", activeTab === 'pacotesCliente' && 'bg-primary text-primary-foreground')}>Pacotes</Button>
-                        <Button variant={activeTab === 'agendamentoContinuo' ? 'default' : 'ghost'} onClick={() => setActiveTab('agendamentoContinuo')} className={cn("font-body text-xs sm:text-sm whitespace-nowrap", activeTab === 'agendamentoContinuo' && 'bg-primary text-primary-foreground')}><Repeat className="mr-1 h-4 w-4"/>Contínuo</Button>
-                        <Button variant={activeTab === 'historico' ? 'default' : 'ghost'} onClick={() => setActiveTab('historico')} className={cn("font-body text-xs sm:text-sm whitespace-nowrap", activeTab === 'historico' && 'bg-primary text-primary-foreground')}>Histórico</Button>
+                    <TabsList className="inline-flex w-max bg-transparent p-1">
+                      <TabsTrigger value="dados" className="font-body text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-accent/50">Dados</TabsTrigger>
+                      <TabsTrigger value="fidelidade" className="font-body text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-accent/50">Fidelidade</TabsTrigger>
+                      <TabsTrigger value="pacotesCliente" className="font-body text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-accent/50">Pacotes</TabsTrigger>
+                      <TabsTrigger value="agendamentoContinuo" className="font-body text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-accent/50 flex items-center gap-1"><Repeat className="h-4 w-4"/>Contínuo</TabsTrigger>
+                      <TabsTrigger value="historico" className="font-body text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-accent/50">Histórico</TabsTrigger>
                     </TabsList>
                   </div>
                 </div>
@@ -844,7 +844,7 @@ export default function ClientesPage() {
                                                     slotClasses = cn(slotClasses, "border-pink-600 ring-2 ring-pink-500 ring-offset-1 animate-pulse");
                                                     iconComponent = <Heart className="h-5 w-5 text-pink-500 fill-pink-500" />;
                                                 } else {
-                                                    iconComponent = <PawPrint className="h-5 w-5 text-pink-500 fill-pink-500" />;
+                                                    iconComponent = <Paintbrush2 className="h-5 w-5 text-pink-500 fill-pink-500" />;
                                                 }
                                             } else {
                                                 slotClasses = cn(slotClasses, "bg-gray-50 dark:bg-gray-800/30 border-gray-300 dark:border-gray-700 border-dashed");
@@ -1159,5 +1159,7 @@ export default function ClientesPage() {
     </div>
   );
 }
+
+    
 
     

@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Heart, Gift, Star, Circle, PlusSquare, RotateCcw, Loader2, PawPrint, Users } from "lucide-react"; 
+import { Heart, Gift, Star, Circle, PlusSquare, RotateCcw, Loader2, Paintbrush2, Users } from "lucide-react"; 
 import * as React from "react"; 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -228,7 +228,7 @@ export default function FidelidadePage() {
                                   slotClasses = cn(slotClasses, palette.border.replace('border-', 'border-').replace('-500', '-600'), "ring-1", palette.border.replace('border-','ring-'), "ring-offset-0 animate-pulse");
                                   iconComponent = <Heart className={cn("h-4 w-4", palette.accentText, palette.heartFill)} />;
                               } else {
-                                  iconComponent = <PawPrint className={cn("h-4 w-4", palette.pawFill)} />;
+                                  iconComponent = <Paintbrush2 className={cn("h-4 w-4", palette.pawFill)} />;
                               }
                             } else {
                               slotClasses = cn(slotClasses, "bg-gray-50 dark:bg-gray-800/30 border-gray-300 dark:border-gray-700 border-dashed");
@@ -275,5 +275,7 @@ export default function FidelidadePage() {
     </div>
   );
 }
+
+    
 
     

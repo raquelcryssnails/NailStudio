@@ -34,8 +34,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext"; 
-import { SettingsProvider, useSettings } from "@/contexts/SettingsContext";
-import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import { useSettings } from "@/contexts/SettingsContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 
 // Colorful SVG Icon Components
@@ -351,14 +351,10 @@ export default function MainAppLayout({
   const defaultIsMobile = useIsMobile();
  
   return (
-    <SettingsProvider>
-      <ThemeProvider>
-        <SidebarProvider defaultOpen={!defaultIsMobile}>
-          <ProtectedLayout>
-            <MainLayoutContent>{children}</MainLayoutContent>
-          </ProtectedLayout>
-        </SidebarProvider>
-      </ThemeProvider>
-    </SettingsProvider>
+    <SidebarProvider defaultOpen={!defaultIsMobile}>
+      <ProtectedLayout>
+        <MainLayoutContent>{children}</MainLayoutContent>
+      </ProtectedLayout>
+    </SidebarProvider>
   );
 }

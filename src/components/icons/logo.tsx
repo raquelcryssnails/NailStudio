@@ -5,7 +5,7 @@ export function NailStudioLogo(props: SVGProps<SVGSVGElement>) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 200 50"
-      width="150"
+      width="250"
       height="37.5"
       aria-labelledby="nailStudioLogoTitle"
       {...props}
@@ -23,10 +23,10 @@ export function NailStudioLogo(props: SVGProps<SVGSVGElement>) {
         dominantBaseline="middle"
         textAnchor="middle"
         fontFamily="Belleza, sans-serif"
-        fontSize="32"
+        fontSize="26"
         fill="url(#logoGradient)"
       >
-        NailStudio AI
+        Raquel Cryss Nails Design
       </text>
     </svg>
   );

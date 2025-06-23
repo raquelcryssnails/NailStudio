@@ -3,12 +3,11 @@
 
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Settings, Palette, Clock, Bell, Users, UserPlus, Save, CheckCircle, UserCog, Tag, Image as ImageIcon, MessageSquare, Heart } from "lucide-react"; // Added Heart
+import { Settings, Clock, Bell, Users, UserPlus, Save, UserCog, Image as ImageIcon, Tv } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea"; 
 import {
   Accordion,
@@ -28,8 +27,6 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { useTheme } from "@/contexts/ThemeContext"; 
 import { useSettings, type DayOpeningHours } from "@/contexts/SettingsContext"; 
 import type { AppSettings } from "@/types/firestore";
 
@@ -51,25 +48,8 @@ const timeSlots = Array.from({ length: (22 - 7) * 2 +1 }, (_, i) => { // 7:00 to
     return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 });
 
-interface ThemeOption {
-  name: string;
-  id: string;
-  primaryColorClass: string;
-}
-
-const themeOptions: ThemeOption[] = [
-  { name: "Padrão Claro", id: "light", primaryColorClass: "bg-[hsl(var(--primary))]" },
-  { name: "Rosa Pastel", id: "pastel-rose", primaryColorClass: "bg-[hsl(345,80%,80%)]" },
-  { name: "Céu Pastel", id: "pastel-sky", primaryColorClass: "bg-[hsl(205,80%,80%)]" },
-  { name: "Lavanda Pastel", id: "pastel-lavender", primaryColorClass: "bg-[hsl(255,65%,78%)]" },
-  { name: "Menta Pastel", id: "pastel-mint", primaryColorClass: "bg-[hsl(150,60%,70%)]" },
-  { name: "Pêssego Pastel", id: "pastel-peach", primaryColorClass: "bg-[hsl(30,100%,80%)]" },
-  { name: "Padrão Escuro", id: "dark", primaryColorClass: "bg-[hsl(var(--primary))]" },
-];
-
 
 export default function ConfiguracoesPage() {
-  const { currentTheme, setAppTheme } = useTheme();
   const { 
     openingHours: contextOpeningHours, 
     userName: contextUserName, 
@@ -79,6 +59,8 @@ export default function ConfiguracoesPage() {
     salonName: contextSalonName,
     salonAddress: contextSalonAddress,
     salonPhone: contextSalonPhone,
+    clientLoginTitle: contextClientLoginTitle,
+    clientLoginDescription: contextClientLoginDescription,
     setAppSettingsState, 
     isLoadingSettings 
   } = useSettings();
@@ -91,6 +73,8 @@ export default function ConfiguracoesPage() {
   const [editableSalonName, setEditableSalonName] = React.useState(contextSalonName);
   const [editableSalonAddress, setEditableSalonAddress] = React.useState(contextSalonAddress);
   const [editableSalonPhone, setEditableSalonPhone] = React.useState(contextSalonPhone);
+  const [editableClientLoginTitle, setEditableClientLoginTitle] = React.useState(contextClientLoginTitle);
+  const [editableClientLoginDescription, setEditableClientLoginDescription] = React.useState(contextClientLoginDescription);
 
 
   const [localOpeningHours, setLocalOpeningHours] = React.useState<DayOpeningHours[]>(
@@ -109,6 +93,8 @@ export default function ConfiguracoesPage() {
   React.useEffect(() => { setEditableSalonName(contextSalonName); }, [contextSalonName]);
   React.useEffect(() => { setEditableSalonAddress(contextSalonAddress); }, [contextSalonAddress]);
   React.useEffect(() => { setEditableSalonPhone(contextSalonPhone); }, [contextSalonPhone]);
+  React.useEffect(() => { setEditableClientLoginTitle(contextClientLoginTitle); }, [contextClientLoginTitle]);
+  React.useEffect(() => { setEditableClientLoginDescription(contextClientLoginDescription); }, [contextClientLoginDescription]);
   React.useEffect(() => {
     if (contextOpeningHours && contextOpeningHours.length > 0) {
       setLocalOpeningHours(contextOpeningHours);
@@ -143,14 +129,6 @@ export default function ConfiguracoesPage() {
     setIsInviteUserModalOpen(false);
   };
 
-  const handleThemeChange = (themeId: string) => {
-    setAppTheme(themeId); 
-    toast({
-      title: "Tema Alterado!",
-      description: `O tema foi alterado para ${themeOptions.find(t => t.id === themeId)?.name || themeId}.`,
-    });
-  };
-
   const handleSaveAllSettings = () => {
     const settingsToSave: Partial<AppSettings> = {
       openingHours: localOpeningHours,
@@ -161,6 +139,8 @@ export default function ConfiguracoesPage() {
       salonName: editableSalonName,
       salonAddress: editableSalonAddress,
       salonPhone: editableSalonPhone,
+      clientLoginTitle: editableClientLoginTitle,
+      clientLoginDescription: editableClientLoginDescription,
       // Theme is saved separately via its own context/handler
     };
 
@@ -244,7 +224,30 @@ export default function ConfiguracoesPage() {
                   <Label htmlFor="editableSalonPhone" className="font-body">Telefone</Label>
                   <Input id="editableSalonPhone" value={editableSalonPhone} onChange={(e) => setEditableSalonPhone(e.target.value)} placeholder="(XX) XXXXX-XXXX" className="focus:ring-accent font-body" />
                 </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-client-portal">
+              <AccordionTrigger className="font-headline text-lg text-primary hover:no-underline">
+                <Tv className="mr-2 h-5 w-5 text-accent" /> Personalização do Portal do Cliente
+              </AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-2">
+                 <div>
+                  <Label htmlFor="editableClientLoginTitle" className="font-body">Título da Tela de Login do Cliente</Label>
+                  <Input id="editableClientLoginTitle" value={editableClientLoginTitle} onChange={(e) => setEditableClientLoginTitle(e.target.value)} className="focus:ring-accent font-body" placeholder="Ex: Portal do Cliente" />
+                </div>
                 <div>
+                  <Label htmlFor="editableClientLoginDescription" className="font-body">Descrição da Tela de Login do Cliente</Label>
+                  <Textarea 
+                    id="editableClientLoginDescription" 
+                    value={editableClientLoginDescription} 
+                    onChange={(e) => setEditableClientLoginDescription(e.target.value)} 
+                    className="focus:ring-accent font-body" 
+                    placeholder="Ex: Acesse para ver seus agendamentos e promoções." 
+                    rows={3}
+                  />
+                </div>
+                 <div>
                   <Label htmlFor="editableWhatsappMessage" className="font-body">Mensagem Padrão para Agendamento via WhatsApp</Label>
                   <Textarea 
                     id="editableWhatsappMessage" 
@@ -255,43 +258,6 @@ export default function ConfiguracoesPage() {
                     rows={3}
                   />
                    <p className="text-xs text-muted-foreground mt-1 font-body">Esta mensagem será usada no botão "Agendar Horário via WhatsApp" no portal do cliente.</p>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-customization">
-              <AccordionTrigger className="font-headline text-lg text-primary hover:no-underline">
-                <Palette className="mr-2 h-5 w-5 text-accent" /> Personalização Visual
-              </AccordionTrigger>
-              <AccordionContent className="space-y-4 pt-2">
-                <p className="font-body text-sm text-muted-foreground">Escolha um tema para a interface do sistema.</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {themeOptions.map((theme) => (
-                    <Button
-                      key={theme.id}
-                      variant="outline"
-                      className={cn(
-                        "h-auto p-4 flex flex-col items-center justify-center gap-2 relative transition-all duration-200 hover:shadow-lg",
-                        currentTheme === theme.id && "ring-2 ring-primary border-primary shadow-md"
-                      )}
-                      onClick={() => handleThemeChange(theme.id)}
-                    >
-                      <div className={cn("w-8 h-8 rounded-full mb-2 border", theme.primaryColorClass)} />
-                      <span className="font-body text-sm text-center">{theme.name}</span>
-                      {currentTheme === theme.id && (
-                        <CheckCircle className="absolute top-2 right-2 h-5 w-5 text-primary" />
-                      )}
-                    </Button>
-                  ))}
-                </div>
-                <Separator className="my-6" />
-                <div className="flex justify-center">
-                    <Card className="w-full max-w-xs bg-pink-100 dark:bg-pink-900/30 border-2 border-pink-300 dark:border-pink-600 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col items-center justify-center">
-                        <Heart className="h-16 w-16 text-pink-500 fill-pink-400 dark:text-pink-400 dark:fill-pink-500/70 animate-heartbeat" />
-                        <p className="mt-4 font-body text-sm text-pink-700 dark:text-pink-300 text-center">
-                            Feito com <span className="font-bold">amor</span> e tecnologia!
-                        </p>
-                    </Card>
                 </div>
               </AccordionContent>
             </AccordionItem>

@@ -88,7 +88,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
-      <Card className="w-full max-w-md shadow-2xl rounded-xl">
+      <Card className="w-full max-w-md shadow-2xl rounded-xl bg-animated-gradient">
         <CardHeader className="items-center text-center space-y-3">
           <NailStudioLogo className="h-16 w-auto mb-2" />
           <CardTitle className="font-headline text-3xl text-gradient">
@@ -155,7 +155,7 @@ export default function LoginPage() {
         </CardFooter>
       </Card>
       <p className="mt-8 text-center text-sm text-muted-foreground font-body">
-        © {new Date().getFullYear()} NailStudio AI. Todos os direitos reservados.
+        © {new Date().getFullYear()} "Raquel Crys Nails Design, Arte nas pontas dos seus dedos."
       </p>
     </div>
   );

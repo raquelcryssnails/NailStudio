@@ -25,6 +25,8 @@ const DEFAULT_SALON_NAME = "NailStudio AI";
 const DEFAULT_SALON_ADDRESS = "Rua das Palmeiras, 123, Centro";
 const DEFAULT_SALON_PHONE = "(11) 91234-5678";
 const DEFAULT_THEME = "light";
+const DEFAULT_CLIENT_LOGIN_TITLE = "Portal do Cliente";
+const DEFAULT_CLIENT_LOGIN_DESCRIPTION = "Acesse para acompanhar seus selos de fidelidade e muito mais!";
 
 
 export interface SettingsContextType {
@@ -36,6 +38,8 @@ export interface SettingsContextType {
   salonName: string;
   salonAddress: string;
   salonPhone: string;
+  clientLoginTitle: string;
+  clientLoginDescription: string;
   theme: string;
   setAppSettingsState: (newSettings: Partial<AppSettings>) => void;
   isLoadingSettings: boolean;
@@ -60,6 +64,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [salonName, setSalonNameInternal] = useState<string>(DEFAULT_SALON_NAME);
   const [salonAddress, setSalonAddressInternal] = useState<string>(DEFAULT_SALON_ADDRESS);
   const [salonPhone, setSalonPhoneInternal] = useState<string>(DEFAULT_SALON_PHONE);
+  const [clientLoginTitle, setClientLoginTitleInternal] = useState<string>(DEFAULT_CLIENT_LOGIN_TITLE);
+  const [clientLoginDescription, setClientLoginDescriptionInternal] = useState<string>(DEFAULT_CLIENT_LOGIN_DESCRIPTION);
   const [theme, setThemeInternal] = useState<string>(DEFAULT_THEME);
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
   const { toast } = useToast();
@@ -95,6 +101,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setField(setSalonNameInternal, appSettings?.salonName, DEFAULT_SALON_NAME, 'salonName');
         setField(setSalonAddressInternal, appSettings?.salonAddress, DEFAULT_SALON_ADDRESS, 'salonAddress');
         setField(setSalonPhoneInternal, appSettings?.salonPhone, DEFAULT_SALON_PHONE, 'salonPhone');
+        setField(setClientLoginTitleInternal, appSettings?.clientLoginTitle, DEFAULT_CLIENT_LOGIN_TITLE, 'clientLoginTitle');
+        setField(setClientLoginDescriptionInternal, appSettings?.clientLoginDescription, DEFAULT_CLIENT_LOGIN_DESCRIPTION, 'clientLoginDescription');
         setField(setThemeInternal, appSettings?.theme, DEFAULT_THEME, 'theme');
         
         if (defaultsUsed && Object.keys(settingsToSave).length > 0) {
@@ -116,6 +124,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setSalonNameInternal(DEFAULT_SALON_NAME);
         setSalonAddressInternal(DEFAULT_SALON_ADDRESS);
         setSalonPhoneInternal(DEFAULT_SALON_PHONE);
+        setClientLoginTitleInternal(DEFAULT_CLIENT_LOGIN_TITLE);
+        setClientLoginDescriptionInternal(DEFAULT_CLIENT_LOGIN_DESCRIPTION);
         setThemeInternal(DEFAULT_THEME);
       } finally {
         setIsLoadingSettings(false);
@@ -133,6 +143,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     if (newSettings.hasOwnProperty('salonName')) setSalonNameInternal(newSettings.salonName ?? DEFAULT_SALON_NAME);
     if (newSettings.hasOwnProperty('salonAddress')) setSalonAddressInternal(newSettings.salonAddress ?? DEFAULT_SALON_ADDRESS);
     if (newSettings.hasOwnProperty('salonPhone')) setSalonPhoneInternal(newSettings.salonPhone ?? DEFAULT_SALON_PHONE);
+    if (newSettings.hasOwnProperty('clientLoginTitle')) setClientLoginTitleInternal(newSettings.clientLoginTitle ?? DEFAULT_CLIENT_LOGIN_TITLE);
+    if (newSettings.hasOwnProperty('clientLoginDescription')) setClientLoginDescriptionInternal(newSettings.clientLoginDescription ?? DEFAULT_CLIENT_LOGIN_DESCRIPTION);
     if (newSettings.hasOwnProperty('theme')) setThemeInternal(newSettings.theme ?? DEFAULT_THEME);
     
     try {
@@ -158,6 +170,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         salonName,
         salonAddress,
         salonPhone,
+        clientLoginTitle,
+        clientLoginDescription,
         theme,
         setAppSettingsState, 
         isLoadingSettings 

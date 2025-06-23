@@ -21,6 +21,8 @@ export interface AppSettings {
   salonName?: string; 
   salonAddress?: string; 
   salonPhone?: string; 
+  clientLoginTitle?: string;
+  clientLoginDescription?: string;
   theme?: string;
   updatedAt?: string | Timestamp; // Added to match getAppSettingsFS return
 }
@@ -142,5 +144,3 @@ export interface Product {
 // For now, we'll focus on using FinancialTransaction.
 // export type Expense = FinancialTransaction & { type: 'expense' };
 // export type Income = FinancialTransaction & { type: 'income' };
-
-    

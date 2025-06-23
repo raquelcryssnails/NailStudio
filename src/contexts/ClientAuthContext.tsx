@@ -76,7 +76,7 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
       setIsClientAuthenticated(false);
     }
     setIsLoadingClient(false);
-  }, [pathname]); // Removed `auth` from dependencies as it's stable
+  }, [pathname]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -98,10 +98,11 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
 
     setIsLoadingClient(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // onAuthStateChanged will handle setting currentAuthUser & fetching client profile.
-      // fetchClientProfileAndSetState will be called by onAuthStateChanged.
-      // isLoadingClient will be set to false by fetchClientProfileAndSetState.
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Manually trigger the profile fetch and state update now
+      // instead of only relying on onAuthStateChanged
+      await fetchClientProfileAndSetState(userCredential.user);
+      // The state (isLoadingClient, currentClient, isClientAuthenticated) is now up to date.
       return { success: true };
     } catch (error: any) {
       console.error("[ClientAuthContext] Firebase client login error:", error);
@@ -109,26 +110,25 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
         errorMessage = "E-mail ou senha inválidos.";
       }
-      setCurrentAuthUser(null); // Ensure auth user is cleared on login fail
+      setCurrentAuthUser(null);
       setCurrentClient(null);
       setIsClientAuthenticated(false);
       setIsLoadingClient(false); // Explicitly set loading false on error
       return { success: false, error: errorMessage };
     }
-  }, []); // Removed `auth`
+  }, [fetchClientProfileAndSetState]);
 
   const clientLogout = useCallback(async () => {
     setIsLoadingClient(true);
     try {
       await signOut(auth);
-      // onAuthStateChanged will set currentAuthUser, currentClient to null and isClientAuthenticated to false.
-      // It will also set isLoadingClient to false via fetchClientProfileAndSetState.
-      // The redirect logic is in ClientAreaContent's useEffect.
+      router.push('/'); // Explicitly redirect to the welcome page
     } catch (error) {
       console.error("[ClientAuthContext] Firebase client logout error:", error);
-      setIsLoadingClient(false); // Ensure loading is false on error
+    } finally {
+      setIsLoadingClient(false); // Ensure loading is false after logout attempt
     }
-  }, []); // Removed `auth`
+  }, [router]);
 
   const refreshCurrentClient = useCallback(async () => {
     const user = auth.currentUser; 
@@ -136,7 +136,7 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
     setCurrentAuthUser(user); // Re-set currentAuthUser in case it's stale
     await fetchClientProfileAndSetState(user);
     // setIsLoadingClient(false) is called at the end of fetchClientProfileAndSetState
-  }, [fetchClientProfileAndSetState]); // Removed `auth`
+  }, [fetchClientProfileAndSetState]);
 
   return (
     <ClientAuthContext.Provider value={{ 

@@ -9,13 +9,14 @@ import { ClientAuthProvider, useClientAuth } from "@/contexts/ClientAuthContext"
 import { LogOut, Loader2, Home, UserCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { SettingsProvider } from "@/contexts/SettingsContext"; // Import global SettingsProvider
+import { useSettings } from "@/contexts/SettingsContext"; // Import global SettingsProvider
 
 // Define public paths for client area that do not require authentication
 const PUBLIC_CLIENT_PATHS = ['/client/login', '/client/register', '/client/forgot-password'];
 
 function ClientAreaContent({ children }: { children: React.ReactNode }) {
   const { isClientAuthenticated, clientLogout, isLoadingClient, currentClient, currentAuthUser } = useClientAuth();
+  const { salonName } = useSettings();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -82,12 +83,12 @@ function ClientAreaContent({ children }: { children: React.ReactNode }) {
       </main>
       {(PUBLIC_CLIENT_PATHS.includes(pathname) && !isClientAuthenticated) && (
          <footer className="py-6 text-center text-xs text-muted-foreground font-body">
-            NailStudio AI - Portal do Cliente
+            {salonName || "NailStudio AI"} - Portal do Cliente
         </footer>
       )}
        {showHeaderAndFooter && (
          <footer className="py-6 text-center text-xs text-muted-foreground font-body border-t border-border">
-            NailStudio AI - Seu espaço de beleza e bem-estar.
+            {salonName || "NailStudio AI"} - Seu espaço de beleza e bem-estar.
         </footer>
       )}
     </div>
@@ -102,9 +103,7 @@ export default function ClientLayout({
 }) {
   return (
     <ClientAuthProvider>
-      <SettingsProvider> {/* Wrap ClientAreaContent with SettingsProvider */}
         <ClientAreaContent>{children}</ClientAreaContent>
-      </SettingsProvider>
     </ClientAuthProvider>
   );
 }

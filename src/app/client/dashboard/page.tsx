@@ -5,23 +5,21 @@ import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useClientAuth } from "@/contexts/ClientAuthContext";
-import { Loader2, Gift, Heart, Circle, CalendarPlus, MessageSquare, PawPrint, Star, History, Eye, EyeOff, UserCircle } from "lucide-react";
+import { Loader2, Gift, Heart, Circle, Paintbrush2, Star, History, Eye, EyeOff, UserCircle, Sparkles, MessageCircle, Instagram } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { updateClientFS, getAppointmentsFS, getServicesFS, type Appointment, type SalonService } from "@/lib/firebase/firestoreService";
+import { getAppointmentsFS, getServicesFS, type Appointment, type SalonService } from "@/lib/firebase/firestoreService";
 import { format, parseISO, isValid } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useSettings } from "@/contexts/SettingsContext"; // Updated import
+import { useSettings } from "@/contexts/SettingsContext";
 
 
 const stampsNeededForHeart = 3;
 const heartsNeededForMimo = 1;
 const totalStampsOnCard = 12;
-const WHATSAPP_NUMBER = "19996959490"; // Default number, can be configured elsewhere too
-
 
 const cardColorPalette = {
     bg: 'bg-pink-50 dark:bg-pink-900/30',
@@ -43,72 +41,80 @@ const appointmentStatusStyles: Record<Appointment["status"], string> = {
 
 
 export default function ClientDashboardPage() {
-  const { currentClient, isLoadingClient, refreshCurrentClient } = useClientAuth();
-  const { whatsappSchedulingMessage: adminDefinedMessage } = useSettings(); // Get message from settings
+  const { currentClient, isLoadingClient } = useClientAuth();
   const { toast } = useToast();
-  const [isRedeemingMimo, setIsRedeemingMimo] = React.useState(false);
   const [clientAppointments, setClientAppointments] = React.useState<Appointment[]>([]);
   const [servicesList, setServicesList] = React.useState<SalonService[]>([]);
   const [isLoadingAppointments, setIsLoadingAppointments] = React.useState(true);
   const [showAppointments, setShowAppointments] = React.useState(true); 
-
-  const DEFAULT_WHATSAPP_MESSAGE = "Olá! Gostaria de agendar um horário no NailStudio AI.";
-  const WHATSAPP_MESSAGE_TO_USE = adminDefinedMessage || DEFAULT_WHATSAPP_MESSAGE;
+  const { salonPhone, whatsappSchedulingMessage, salonName } = useSettings();
 
   React.useEffect(() => {
+    let isMounted = true;
+
     const fetchClientData = async () => {
       if (currentClient && currentClient.name) {
-        setIsLoadingAppointments(true);
+        if (isMounted) setIsLoadingAppointments(true);
         try {
           const [allAppointments, allServices] = await Promise.all([
             getAppointmentsFS(),
             getServicesFS()
           ]);
 
-          const filteredAppointments = allAppointments.filter(
-            (apt) => apt.clientName.toLowerCase() === currentClient.name.toLowerCase()
-          );
-          
-          filteredAppointments.sort((a, b) => {
-            const statusOrder = (status: Appointment["status"]) => {
-                if (status === "Concluído" || status === "Cancelado") return 1;
-                return 0;
-            };
-            const aStatusOrder = statusOrder(a.status);
-            const bStatusOrder = statusOrder(b.status);
-
-            if (aStatusOrder !== bStatusOrder) {
-                return aStatusOrder - bStatusOrder;
-            }
+          if (isMounted) {
+            const filteredAppointments = allAppointments.filter(
+              (apt) => apt.clientName.toLowerCase() === currentClient.name.toLowerCase()
+            );
             
-            const dateA = parseISO(a.date + 'T' + a.startTime);
-            const dateB = parseISO(b.date + 'T' + b.startTime);
-            if (isValid(dateA) && isValid(dateB)) {
-                 return dateB.getTime() - dateA.getTime(); 
-            }
-            return 0;
-          });
+            filteredAppointments.sort((a, b) => {
+              const statusOrder = (status: Appointment["status"]) => {
+                  if (status === "Concluído" || status === "Cancelado") return 1;
+                  return 0;
+              };
+              const aStatusOrder = statusOrder(a.status);
+              const bStatusOrder = statusOrder(b.status);
 
+              if (aStatusOrder !== bStatusOrder) {
+                  return aStatusOrder - bStatusOrder;
+              }
+              
+              const dateA = parseISO(a.date + 'T' + a.startTime);
+              const dateB = parseISO(b.date + 'T' + b.startTime);
+              if (isValid(dateA) && isValid(dateB)) {
+                   return dateB.getTime() - dateA.getTime(); 
+              }
+              return 0;
+            });
 
-          setClientAppointments(filteredAppointments);
-          setServicesList(allServices);
-
+            setClientAppointments(filteredAppointments);
+            setServicesList(allServices);
+          }
         } catch (error) {
-          console.error("Error fetching client appointments or services:", error);
-          toast({ variant: "destructive", title: "Erro ao Carregar Agendamentos", description: "Não foi possível buscar seus agendamentos." });
+          if (isMounted) {
+            console.error("Error fetching client appointments or services:", error);
+            toast({ variant: "destructive", title: "Erro ao Carregar Agendamentos", description: "Não foi possível buscar seus agendamentos." });
+          }
         } finally {
-          setIsLoadingAppointments(false);
+          if (isMounted) {
+            setIsLoadingAppointments(false);
+          }
         }
       } else {
-        setIsLoadingAppointments(false);
-        setClientAppointments([]);
-        setServicesList([]);
+        if (isMounted) {
+          setIsLoadingAppointments(false);
+          setClientAppointments([]);
+          setServicesList([]);
+        }
       }
     };
 
     if (!isLoadingClient) { 
         fetchClientData();
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [currentClient, isLoadingClient, toast]);
 
   const getServiceNames = (serviceIds: string[]): string => {
@@ -151,39 +157,26 @@ export default function ClientDashboardPage() {
   const mimosTotalEarnedByClient = Math.floor(heartsEarned / heartsNeededForMimo);
   const mimosAvailableForClient = mimosTotalEarnedByClient - mimosRedeemed;
 
-  const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE_TO_USE)}`;
-
-  const handleRedeemMimo = async () => {
-    if (!currentClient || !currentClient.id || mimosAvailableForClient <= 0) {
-      toast({ variant: "destructive", title: "Sem Mimos", description: "Você não tem mimos disponíveis para resgate." });
+  const handleRedeemMimo = () => {
+    if (!currentClient || mimosAvailableForClient <= 0) {
       return;
     }
-    setIsRedeemingMimo(true);
-    try {
-      const newMimosRedeemedCount = (currentClient.mimosRedeemed || 0) + 1;
-      await updateClientFS(currentClient.id, { mimosRedeemed: newMimosRedeemedCount });
-      await refreshCurrentClient(); 
-      toast({
-        title: "Mimo Resgatado!",
-        description: "Parabéns! Você resgatou um mimo. Aproveite!",
-      });
-    } catch (error) {
-      console.error("Error redeeming mimo:", error);
-      toast({ variant: "destructive", title: "Erro ao Resgatar", description: "Não foi possível resgatar seu mimo. Tente novamente." });
-    } finally {
-      setIsRedeemingMimo(false);
-    }
+    toast({
+      title: "Mimo Disponível para Resgate!",
+      description: "Parabéns! Fale com sua Nail Designer para resgatar sua recompensa na sua próxima visita.",
+    });
   };
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4 sm:px-6 lg:px-8 space-y-8">
       <Card className="shadow-xl rounded-xl border border-border overflow-hidden">
         <CardHeader className="bg-card/50 p-6">
-          <CardTitle className="font-headline text-3xl text-gradient">
-            Olá, {name}!
+          <CardTitle className="font-headline text-3xl flex items-center gap-2">
+            <span className="text-gradient">Olá, {name}!</span>
+            <Sparkles className="h-7 w-7 text-yellow-400 animate-slow-pulse" />
           </CardTitle>
           <CardDescription className="font-body text-lg text-muted-foreground">
-            Bem-vindo(a) ao seu espaço de beleza e bem-estar no NailStudio AI.
+            Bem-vindo(a) ao seu espaço de beleza e bem-estar no {salonName || "Raquel Cryss Nails Design"}.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
@@ -228,14 +221,14 @@ export default function ClientDashboardPage() {
                                 <p className="font-body text-xs">Mimos Resgatados: <span className="font-medium">{mimosRedeemed}</span></p>
                                 <p className="font-body text-xs">Mimos Disponíveis: <span className="font-bold text-green-600">{mimosAvailableForClient}</span></p>
                                 {mimosAvailableForClient > 0 && (
-                                    <Button 
-                                        onClick={handleRedeemMimo} 
-                                        disabled={isRedeemingMimo}
+                                    <Button
+                                        onClick={handleRedeemMimo}
                                         size="sm"
-                                        className="w-full mt-2 font-body text-xs bg-orange-500 hover:bg-orange-600 text-white"
+                                        variant="outline"
+                                        className="w-full mt-2 font-body text-xs bg-orange-100 border-orange-300 text-orange-700 hover:bg-orange-200 hover:text-orange-800 dark:bg-orange-900/30 dark:border-orange-700 dark:text-orange-300 dark:hover:bg-orange-800/40"
                                     >
-                                        {isRedeemingMimo ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin"/> : <Gift className="mr-1.5 h-3.5 w-3.5" />}
-                                        Resgatar Mimo!
+                                        <Gift className="mr-1.5 h-3.5 w-3.5" />
+                                        Resgatar Mimo
                                     </Button>
                                 )}
                             </div>
@@ -257,7 +250,7 @@ export default function ClientDashboardPage() {
                                         slotClasses = cn(slotClasses, cardColorPalette.border.replace('border-', 'border-').replace('-500', '-600'), "ring-1", cardColorPalette.border.replace('border-','ring-'), "ring-offset-0 animate-pulse");
                                         iconComponent = <Heart className={cn("h-4 w-4", cardColorPalette.accentText, cardColorPalette.heartFill)} />;
                                     } else {
-                                        iconComponent = <PawPrint className={cn("h-4 w-4", cardColorPalette.pawFill)} />;
+                                        iconComponent = <Paintbrush2 className={cn("h-4 w-4", cardColorPalette.pawFill)} />;
                                     }
                                 } else {
                                     slotClasses = cn(slotClasses, "bg-gray-50 dark:bg-gray-800/30 border-gray-300 dark:border-gray-700 border-dashed");
@@ -274,22 +267,40 @@ export default function ClientDashboardPage() {
                         </div>
                     </CardContent>
                 </Card>
+                <div className="mt-8 text-center">
+                    <a
+                        href="https://www.instagram.com/raquel_cryss"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-3 rounded-lg border border-border/50 bg-card/50 p-3 shadow-sm hover:shadow-md transition-shadow"
+                    >
+                        <Instagram className="h-7 w-7 text-pink-500 animate-slow-pulse" />
+                        <p className="font-body text-md text-muted-foreground">Siga nossa arte: <span className="font-semibold text-foreground">@raquel_cryss</span></p>
+                    </a>
+                </div>
             </div>
             <div className="space-y-6">
-                <div>
-                    <h3 className="font-headline text-xl text-primary mb-3">Próximos Passos</h3>
-                     <Button
-                        asChild
-                        className="w-full py-6 text-lg font-body bg-green-500 hover:bg-green-600 text-white shadow-md"
-                    >
-                        <Link href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                            <MessageSquare className="mr-2 h-5 w-5" /> Agendar Horário via WhatsApp
-                        </Link>
-                    </Button>
-                    <p className="text-xs text-muted-foreground mt-2 text-center font-body">
-                        Clique para abrir uma conversa e agendar seu próximo momento de cuidado.
-                    </p>
-                </div>
+                <Card className="bg-card/30">
+                    <CardHeader>
+                        <CardTitle className="font-headline text-md text-accent flex items-center gap-2">
+                            <Sparkles className="h-5 w-5" />
+                            Próximos Passos
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white font-body">
+                            <a
+                                href={`https://wa.me/${(salonPhone || '').replace(/\D/g, '')}?text=${encodeURIComponent(whatsappSchedulingMessage || '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <MessageCircle className="mr-2 h-4 w-4" />
+                                Agendar Horário via WhatsApp
+                            </a>
+                        </Button>
+                    </CardContent>
+                </Card>
+
                  <Card className="bg-card/30">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle className="font-headline text-md text-accent flex items-center gap-2">
@@ -353,7 +364,7 @@ export default function ClientDashboardPage() {
         </CardContent>
         <CardFooter className="p-6 bg-card/30 border-t border-border">
             <p className="text-sm text-muted-foreground font-body text-center w-full">
-                Agradecemos a sua preferência! <Heart className="inline h-4 w-4 text-pink-500" />
+                Agradecemos a sua preferência! <Heart className="inline h-4 w-4 text-pink-500 animate-heartbeat" />
             </p>
         </CardFooter>
       </Card>

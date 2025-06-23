@@ -18,8 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useClientAuth } from "@/contexts/ClientAuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { NailStudioLogo } from "@/components/icons/logo";
-import { LogIn, Loader2, UserCircle, UserPlus, MailQuestion, Heart, Sparkles } from "lucide-react"; 
+import { LogIn, Loader2, UserPlus, Heart } from "lucide-react"; 
 import { useRouter } from "next/navigation";
 import Link from "next/link"; 
 import { useSettings } from "@/contexts/SettingsContext";
@@ -37,7 +36,7 @@ export default function ClientLoginPage() {
   const { loginClient, isClientAuthenticated, isLoadingClient, currentClient } = useClientAuth();
   const { toast } = useToast();
   const router = useRouter();
-  const { salonName } = useSettings();
+  const { salonName, clientLoginTitle, clientLoginDescription } = useSettings();
 
   const form = useForm<ClientLoginFormValues>({
     resolver: zodResolver(clientLoginFormSchema),
@@ -92,18 +91,15 @@ export default function ClientLoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
-      <Card className="w-full max-w-md shadow-xl rounded-xl border border-border">
+      <Card className="w-full max-w-md shadow-xl rounded-xl border border-border bg-animated-gradient">
         <CardHeader className="items-center text-center space-y-2 pt-8">
-          <div className="flex items-center justify-center space-x-2.5">
-            <NailStudioLogo className="h-10 w-auto" />
-            <Sparkles className="h-5 w-5 text-primary" />
-            <h2 className="font-headline text-3xl text-gradient">
-              Portal do Cliente
-            </h2>
-          </div>
-          <CardDescription className="font-body text-base text-muted-foreground px-4 pt-1">
-            Acesse para acompanhar seus selos de fidelidade e muito mais!
-          </CardDescription>
+            <Heart className="h-10 w-10 text-primary animate-slow-pulse mb-2" />
+            <CardTitle className="font-headline text-3xl text-gradient px-4 text-center">
+                {clientLoginTitle || "Portal do Cliente"}
+            </CardTitle>
+            <CardDescription className="font-body text-base text-muted-foreground px-4 !mt-4">
+                {clientLoginDescription || "Acesse para acompanhar seus selos de fidelidade e muito mais!"}
+            </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 pb-8">
           <Form {...form}>
@@ -176,19 +172,8 @@ export default function ClientLoginPage() {
         </CardFooter>
       </Card>
       
-      <div className="mt-6">
-        <Card 
-          className={cn(
-            "w-36 mx-auto bg-pink-100 dark:bg-pink-900/30 border-2 border-pink-300 dark:border-pink-600",
-            "rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300",
-            "p-4 flex flex-col items-center justify-center"
-          )}
-        >
-          <Heart className="h-10 w-10 text-pink-500 fill-pink-400 dark:text-pink-400 dark:fill-pink-500/70 animate-heartbeat" />
-        </Card>
-      </div>
-
-      <DynamicCopyrightYear defaultSalonName={salonName || "NailStudio AI"} />
+      <DynamicCopyrightYear defaultSalonName={salonName || "Raquel Cryss Nails Design"} />
     </div>
   );
 }
+

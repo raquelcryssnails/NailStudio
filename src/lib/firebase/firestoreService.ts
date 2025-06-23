@@ -117,6 +117,8 @@ export const getAppSettingsFS = async (): Promise<AppSettings | null> => {
         salonName: data.salonName,
         salonAddress: data.salonAddress,
         salonPhone: data.salonPhone,
+        clientLoginTitle: data.clientLoginTitle,
+        clientLoginDescription: data.clientLoginDescription,
       };
       // Convert Timestamp to ISO string for updatedAt
       if (data.updatedAt && data.updatedAt instanceof Timestamp) {
@@ -152,6 +154,9 @@ export const saveAppSettingsFS = async (settings: Partial<AppSettings>): Promise
     if (settings.hasOwnProperty('salonName')) dataToSave.salonName = settings.salonName;
     if (settings.hasOwnProperty('salonAddress')) dataToSave.salonAddress = settings.salonAddress;
     if (settings.hasOwnProperty('salonPhone')) dataToSave.salonPhone = settings.salonPhone;
+    if (settings.hasOwnProperty('clientLoginTitle')) dataToSave.clientLoginTitle = settings.clientLoginTitle;
+    if (settings.hasOwnProperty('clientLoginDescription')) dataToSave.clientLoginDescription = settings.clientLoginDescription;
+
 
     await setDoc(settingsDocRef, dataToSave, { merge: true });
     console.log('App settings saved to Firestore successfully:', dataToSave);
@@ -736,5 +741,3 @@ export const clearAllAppointmentsFS = async (): Promise<{ success: boolean, dele
 // For now, we'll focus on using FinancialTransaction.
 // export type Expense = FinancialTransaction & { type: 'expense' };
 // export type Income = FinancialTransaction & { type: 'income' };
-
-    
